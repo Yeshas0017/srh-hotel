@@ -1,0 +1,13 @@
+{
+    "title": "Hotel SRH",
+    "book_now": "Reservar Ahora",
+    "booking": "Reserva",
+    "confirmation": "Confirmación",
+    "name": "Nombre",
+    "email": "Correo electrónico",
+    "check_in": "Entrada",
+    "check_out": "Salida",
+    "submit": "Enviar",
+    "scan_qr": "Escanear QR",
+    "nearby_hotels": "Hoteles Cercanos"
+}
