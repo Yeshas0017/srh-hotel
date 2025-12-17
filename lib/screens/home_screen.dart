@@ -50,10 +50,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // Controls (Bottom Right) - Resize Only
           const Positioned(bottom: 10, right: 10, child: ResizeControls()),
-
-          // Controls (Top Right) - Magnifier Toggle
-
-          // Actual Magnifier Layer (Global over all pages)
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

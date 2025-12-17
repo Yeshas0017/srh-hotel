@@ -31,10 +31,8 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Colors.white, // Removed to allow theme background
       body: Stack(
         children: [
-          // Language Dropdown (Top Right)
           // Theme Toggle and Language Dropdown (Top Right)
           Positioned(
             top: 40,

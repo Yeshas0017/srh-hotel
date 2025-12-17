@@ -50,16 +50,6 @@ class LogoutButton extends StatelessWidget {
   }
 }
 
-class LanguageSwitcher extends StatelessWidget {
-  const LanguageSwitcher({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // Deprecated: Use LanguageDropdown in LoginScreen instead.
-    return const SizedBox.shrink();
-  }
-}
-
 class LanguageDropdown extends StatelessWidget {
   const LanguageDropdown({super.key});
 

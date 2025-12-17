@@ -150,7 +150,6 @@ class _BookingScreenState extends State<BookingScreen> {
               child: ListView(
                 children: [
                   Card(
-                    // Removed hardcoded color: Colors.orange.shade50
                     child: ListTile(
                       title: Text('${'booking'.tr()}: $roomType'),
                       subtitle: Text('${'price'.tr()}: €$price / night'),
