@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../models/booking.dart';
 import '../utils/database_helper.dart';
 import '../widgets/app_controls.dart';
@@ -35,7 +36,7 @@ class _AdminScreenState extends State<AdminScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Admin Dashboard'),
+        title: Text('admin_dashboard'.tr()),
         actions: const [LogoutButton()],
       ),
       body: Stack(
@@ -46,9 +47,11 @@ class _AdminScreenState extends State<AdminScreen> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
+                return Center(
+                  child: Text('${'error'.tr()}: ${snapshot.error}'),
+                );
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Center(child: Text('No bookings yet.'));
+                return Center(child: Text('no_bookings'.tr()));
               }
 
               final bookings = snapshot.data!;
@@ -63,13 +66,15 @@ class _AdminScreenState extends State<AdminScreen> {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Email: ${booking.email}'),
-                          Text('Room: ${booking.roomType} - €${booking.price}'),
+                          Text('${'email'.tr()}: ${booking.email}'),
                           Text(
-                            'Check-in: ${DateFormat('yyyy-MM-dd').format(booking.checkIn)}',
+                            '${'room'.tr()}: ${booking.roomType} - €${booking.price}',
                           ),
                           Text(
-                            'Check-out: ${DateFormat('yyyy-MM-dd').format(booking.checkOut)}',
+                            '${'check_in'.tr()}: ${DateFormat('yyyy-MM-dd').format(booking.checkIn)}',
+                          ),
+                          Text(
+                            '${'check_out'.tr()}: ${DateFormat('yyyy-MM-dd').format(booking.checkOut)}',
                           ),
                         ],
                       ),
@@ -87,7 +92,7 @@ class _AdminScreenState extends State<AdminScreen> {
               );
             },
           ),
-          const Positioned(top: 10, left: 10, child: ResizeControls()),
+          const Positioned(bottom: 10, right: 10, child: ResizeControls()),
         ],
       ),
     );

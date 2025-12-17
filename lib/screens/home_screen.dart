@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../widgets/app_controls.dart';
+import 'scanner_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,8 +14,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool _showMagnifier = false;
-  Offset _magnifierPosition = const Offset(100, 100);
+  int _currentIndex = 0;
 
   @override
   void initState() {
@@ -29,142 +29,178 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // Views for each tab
+  late final List<Widget> _pages = [
+    _buildRoomList(),
+    _buildMap(),
+    const ScannerScreen(),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('title'.tr()),
-        actions: [
-          IconButton(
-            icon: Icon(_showMagnifier ? Icons.zoom_in : Icons.zoom_out),
-            onPressed: () {
-              setState(() {
-                _showMagnifier = !_showMagnifier;
-              });
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.language),
-            onPressed: () {
-              if (context.locale.languageCode == 'en') {
-                context.setLocale(const Locale('es'));
-              } else if (context.locale.languageCode == 'es') {
-                context.setLocale(const Locale('de'));
-              } else {
-                context.setLocale(const Locale('en'));
-              }
-            },
-          ),
-          const LogoutButton(),
-        ],
+        actions: const [LogoutButton()],
       ),
       body: Stack(
         children: [
-          Column(
-            children: [
-              Expanded(
-                flex: 1,
-                child: ListView(
-                  padding: const EdgeInsets.all(16),
-                  children: [
-                    _buildRoomCard(context, 'Standard Room', 100),
-                    _buildRoomCard(context, 'Deluxe Room', 200),
-                    _buildRoomCard(context, 'Suite Room', 300),
-                  ],
-                ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Stack(
-                  children: [
-                    FlutterMap(
-                      options: MapOptions(
-                        initialCenter: const LatLng(
-                          49.40768,
-                          8.69079,
-                        ), // Heidelberg, Germany
-                        initialZoom: 13.0,
-                      ),
-                      children: [
-                        TileLayer(
-                          urlTemplate:
-                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                          userAgentPackageName: 'com.example.srh_hotel',
-                        ),
-                        MarkerLayer(
-                          markers: [
-                            // SRH Hotel (Main)
-                            Marker(
-                              point: const LatLng(49.40768, 8.69079),
-                              width: 80,
-                              height: 80,
-                              child: const Icon(
-                                Icons.location_on,
-                                color: Colors.red,
-                                size: 40,
-                              ),
-                            ),
-                            // Hotel 2
-                            Marker(
-                              point: const LatLng(49.41000, 8.70000),
-                              width: 80,
-                              height: 80,
-                              child: const Icon(
-                                Icons.location_on,
-                                color: Colors.blue,
-                                size: 40,
-                              ),
-                            ),
-                            // Hotel 3
-                            Marker(
-                              point: const LatLng(49.40500, 8.68000),
-                              width: 80,
-                              height: 80,
-                              child: const Icon(
-                                Icons.location_on,
-                                color: Colors.green,
-                                size: 40,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    if (_showMagnifier)
-                      Positioned(
-                        left: _magnifierPosition.dx - 50,
-                        top: _magnifierPosition.dy - 50,
-                        child: GestureDetector(
-                          onPanUpdate: (details) {
-                            setState(() {
-                              _magnifierPosition += details.delta;
-                            });
-                          },
-                          child: RawMagnifier(
-                            decoration: const MagnifierDecoration(
-                              shape: CircleBorder(
-                                side: BorderSide(color: Colors.pink, width: 3),
-                              ),
-                            ),
-                            size: const Size(100, 100),
-                            magnificationScale: 2,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const Positioned(top: 10, left: 10, child: ResizeControls()),
+          // Main Content determined by current index
+          IndexedStack(index: _currentIndex, children: _pages),
+
+          // Controls (Bottom Right) - Resize Only
+          const Positioned(bottom: 10, right: 10, child: ResizeControls()),
+
+          // Controls (Top Right) - Magnifier Toggle
+
+          // Actual Magnifier Layer (Global over all pages)
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/scanner');
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
         },
-        child: const Icon(Icons.qr_code_scanner),
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.hotel), label: 'Booking'),
+          BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.qr_code_scanner),
+            label: 'Scanner',
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildRoomList() {
+    return ListView(
+      padding: const EdgeInsets.only(
+        top: 80,
+        left: 16,
+        right: 16,
+        bottom: 16,
+      ), // Padding top for controls
+      children: [
+        // Display Uploaded Image Here
+        Center(
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 20),
+            height: 100, // Adjust height as needed
+            child: Image.asset(
+              'assets/images/srh_logo.png',
+              errorBuilder: (context, error, stackTrace) {
+                return const Icon(
+                  Icons.broken_image,
+                  size: 50,
+                  color: Colors.grey,
+                );
+              },
+            ),
+          ),
+        ),
+        _buildRoomCard(context, 'Standard Room', 100),
+        _buildRoomCard(context, 'Deluxe Room', 200),
+        _buildRoomCard(context, 'Suite Room', 300),
+      ],
+    );
+  }
+
+  Widget _buildMap() {
+    return FlutterMap(
+      options: MapOptions(
+        initialCenter: const LatLng(49.409358, 8.653427), // SRH Campus
+        initialZoom: 13.0,
+      ),
+      children: [
+        TileLayer(
+          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          userAgentPackageName: 'com.example.srh_hotel',
+        ),
+        MarkerLayer(
+          markers: [
+            // SRH Hotel (Main - Big Red)
+            Marker(
+              point: const LatLng(49.409358, 8.653427),
+              width: 100,
+              height: 100,
+              child: const Icon(Icons.location_on, color: Colors.red, size: 60),
+            ),
+            // 1. Hotel Europäischer Hof
+            Marker(
+              point: const LatLng(49.4095, 8.6947),
+              width: 60,
+              height: 60,
+              child: const Icon(Icons.hotel, color: Colors.blue, size: 30),
+            ),
+            // 2. Crowne Plaza
+            Marker(
+              point: const LatLng(49.4087, 8.6912),
+              width: 60,
+              height: 60,
+              child: const Icon(Icons.hotel, color: Colors.blue, size: 30),
+            ),
+            // 3. Leonardo Hotel
+            Marker(
+              point: const LatLng(49.4036, 8.6732),
+              width: 60,
+              height: 60,
+              child: const Icon(Icons.hotel, color: Colors.blue, size: 30),
+            ),
+            // 4. NH Heidelberg
+            Marker(
+              point: const LatLng(49.4068, 8.6793),
+              width: 60,
+              height: 60,
+              child: const Icon(Icons.hotel, color: Colors.blue, size: 30),
+            ),
+            // 5. Qube Hotel
+            Marker(
+              point: const LatLng(49.4055, 8.6830),
+              width: 60,
+              height: 60,
+              child: const Icon(Icons.hotel, color: Colors.blue, size: 30),
+            ),
+            // 6. Hotel Bayrischer Hof
+            Marker(
+              point: const LatLng(49.4102, 8.6935),
+              width: 60,
+              height: 60,
+              child: const Icon(Icons.hotel, color: Colors.blue, size: 30),
+            ),
+            // 7. Heidelberg Suites
+            Marker(
+              point: const LatLng(49.4140, 8.7125),
+              width: 60,
+              height: 60,
+              child: const Icon(Icons.hotel, color: Colors.blue, size: 30),
+            ),
+            // 8. Holländer Hof
+            Marker(
+              point: const LatLng(49.4125, 8.7100),
+              width: 60,
+              height: 60,
+              child: const Icon(Icons.hotel, color: Colors.blue, size: 30),
+            ),
+            // 9. Arthotel Heidelberg
+            Marker(
+              point: const LatLng(49.4110, 8.7088),
+              width: 60,
+              height: 60,
+              child: const Icon(Icons.hotel, color: Colors.blue, size: 30),
+            ),
+            // 10. Hotel Vier Jahreszeiten
+            Marker(
+              point: const LatLng(49.4120, 8.7110),
+              width: 60,
+              height: 60,
+              child: const Icon(Icons.hotel, color: Colors.blue, size: 30),
+            ),
+          ],
+        ),
+      ],
     );
   }
 

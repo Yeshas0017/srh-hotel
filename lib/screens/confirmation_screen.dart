@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:intl/intl.dart';
 import '../models/booking.dart';
 import '../widgets/app_controls.dart';
 
@@ -42,7 +41,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  'Booking Confirmed!',
+                  'booking_confirmed'.tr(),
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 20),
@@ -53,15 +52,15 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
                         children: [
-                          Text('Name: ${booking.name}'),
-                          Text('Email: ${booking.email}'),
-                          Text('Room: ${booking.roomType}'),
-                          Text('Price: €${booking.price}'),
+                          Text('${'name'.tr()}: ${booking.name}'),
+                          Text('${'email'.tr()}: ${booking.email}'),
+                          Text('${'room'.tr()}: ${booking.roomType}'),
+                          Text('${'price'.tr()}: €${booking.price}'),
                           Text(
-                            'Check-in: ${DateFormat('yyyy-MM-dd').format(booking.checkIn)}',
+                            '${'check_in'.tr()}: ${DateFormat('yyyy-MM-dd').format(booking.checkIn)}',
                           ),
                           Text(
-                            'Check-out: ${DateFormat('yyyy-MM-dd').format(booking.checkOut)}',
+                            '${'check_out'.tr()}: ${DateFormat('yyyy-MM-dd').format(booking.checkOut)}',
                           ),
                         ],
                       ),
@@ -69,11 +68,15 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                QrImageView(
-                  data: qrData,
-                  version: QrVersions.auto,
-                  size: 200.0,
-                  semanticsLabel: 'QR Code for Booking',
+                Container(
+                  color: Colors.white,
+                  padding: const EdgeInsets.all(10),
+                  child: QrImageView(
+                    data: qrData,
+                    version: QrVersions.auto,
+                    size: 200.0,
+                    semanticsLabel: 'QR Code for Booking',
+                  ),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton.icon(
@@ -83,19 +86,19 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                     );
                   },
                   icon: const Icon(Icons.volume_up),
-                  label: const Text('Read Details'),
+                  label: Text('read_details'.tr()),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.popUntil(context, ModalRoute.withName('/'));
                   },
-                  child: const Text('Back to Home'),
+                  child: Text('back_to_home'.tr()),
                 ),
               ],
             ),
           ),
-          const Positioned(top: 10, left: 10, child: ResizeControls()),
+          const Positioned(bottom: 10, right: 10, child: ResizeControls()),
         ],
       ),
     );

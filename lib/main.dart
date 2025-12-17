@@ -29,9 +29,15 @@ void main() async {
 
   runApp(
     EasyLocalization(
-      supportedLocales: const [Locale('en'), Locale('es'), Locale('de')],
+      supportedLocales: const [
+        Locale('en'),
+        Locale('de'),
+        Locale('fr'),
+        Locale('es'),
+      ],
       path: 'assets/translations',
       fallbackLocale: const Locale('en'),
+      startLocale: const Locale('en'),
       child: const SRHHotelApp(),
     ),
   );
@@ -41,6 +47,8 @@ class SRHHotelApp extends StatelessWidget {
   static final ValueNotifier<double> textScaleNotifier = ValueNotifier<double>(
     1.0,
   );
+  static final ValueNotifier<ThemeMode> themeNotifier =
+      ValueNotifier<ThemeMode>(ThemeMode.light);
 
   const SRHHotelApp({super.key});
 
@@ -49,35 +57,55 @@ class SRHHotelApp extends StatelessWidget {
     return ValueListenableBuilder<double>(
       valueListenable: textScaleNotifier,
       builder: (context, scale, child) {
-        return MediaQuery(
-          data: MediaQuery.of(
-            context,
-          ).copyWith(textScaler: TextScaler.linear(scale)),
-          child: MaterialApp(
-            title: 'SRH Hotel',
-            localizationsDelegates: context.localizationDelegates,
-            supportedLocales: context.supportedLocales,
-            locale: context.locale,
-            theme: ThemeData(
-              primarySwatch: Colors.orange,
-              scaffoldBackgroundColor: Colors.white,
-              appBarTheme: const AppBarTheme(
-                backgroundColor: Colors.orange,
-                foregroundColor: Colors.white,
+        return ValueListenableBuilder<ThemeMode>(
+          valueListenable: themeNotifier,
+          builder: (context, currentThemeMode, _) {
+            return MediaQuery(
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: TextScaler.linear(scale)),
+              child: MaterialApp(
+                title: 'SRH Hotel',
+                localizationsDelegates: context.localizationDelegates,
+                supportedLocales: context.supportedLocales,
+                locale: context.locale,
+                theme: ThemeData(
+                  primarySwatch: Colors.orange,
+                  scaffoldBackgroundColor: Colors.white,
+                  appBarTheme: const AppBarTheme(
+                    backgroundColor: Colors.orange,
+                    foregroundColor: Colors.white,
+                  ),
+                  colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
+                  useMaterial3: true,
+                ),
+                darkTheme: ThemeData.dark().copyWith(
+                  primaryColor: Colors.orange,
+                  colorScheme: ColorScheme.fromSeed(
+                    seedColor: Colors.orange,
+                    brightness: Brightness.dark,
+                  ),
+                  appBarTheme: const AppBarTheme(
+                    backgroundColor: Colors.orange, // Keep orange app bar
+                    foregroundColor: Colors.white,
+                  ),
+                  scaffoldBackgroundColor:
+                      Colors.black, // Explicit black as requested
+                  cardColor: Colors.grey[900],
+                ),
+                themeMode: currentThemeMode,
+                initialRoute: '/login',
+                routes: {
+                  '/login': (context) => const LoginScreen(),
+                  '/': (context) => const HomeScreen(),
+                  '/booking': (context) => const BookingScreen(),
+                  '/confirmation': (context) => const ConfirmationScreen(),
+                  '/scanner': (context) => const ScannerScreen(),
+                  '/admin': (context) => const AdminScreen(),
+                },
               ),
-              colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
-              useMaterial3: true,
-            ),
-            initialRoute: '/login',
-            routes: {
-              '/login': (context) => const LoginScreen(),
-              '/': (context) => const HomeScreen(),
-              '/booking': (context) => const BookingScreen(),
-              '/confirmation': (context) => const ConfirmationScreen(),
-              '/scanner': (context) => const ScannerScreen(),
-              '/admin': (context) => const AdminScreen(),
-            },
-          ),
+            );
+          },
         );
       },
     );

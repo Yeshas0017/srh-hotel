@@ -9,5 +9,18 @@
     "check_out": "Check-out",
     "submit": "Absenden",
     "scan_qr": "QR scannen",
-    "nearby_hotels": "Hotels in der Nähe"
+    "nearby_hotels": "Hotels in der Nähe",
+    "admin_dashboard": "Admin-Dashboard",
+    "no_bookings": "Noch keine Buchungen.",
+    "error": "Fehler",
+    "room": "Zimmer",
+    "price": "Preis",
+    "select_check_in": "Check-in Datum wählen",
+    "select_check_out": "Check-out Datum wählen",
+    "booking_confirmed": "Buchung bestätigt!",
+    "read_details": "Details vorlesen",
+    "back_to_home": "Zurück zur Startseite",
+    "please_enter_name": "Bitte Namen eingeben",
+    "please_enter_email": "Bitte E-Mail eingeben",
+    "fill_all_fields": "Bitte alle Felder ausfüllen"
 }

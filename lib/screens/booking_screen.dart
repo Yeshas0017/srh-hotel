@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../utils/database_helper.dart';
-import 'package:intl/intl.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import '../models/booking.dart';
 import '../widgets/app_controls.dart';
@@ -103,11 +102,31 @@ class _BookingScreenState extends State<BookingScreen> {
           );
         }
       }
+    } else if (_checkIn == null || _checkOut == null) {
+      _showErrorDialog('Please select both Check-In and Check-Out dates.');
+    } else if (_checkOut!.isBefore(_checkIn!) ||
+        _checkOut!.isAtSameMomentAs(_checkIn!)) {
+      _showErrorDialog('Check-Out date must be after Check-In date.');
     } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
+      // Form invalid
+      _showErrorDialog('Please correct the errors in the form.');
     }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Invalid Input'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -131,10 +150,10 @@ class _BookingScreenState extends State<BookingScreen> {
               child: ListView(
                 children: [
                   Card(
-                    color: Colors.orange.shade50,
+                    // Removed hardcoded color: Colors.orange.shade50
                     child: ListTile(
-                      title: Text('Booking: $roomType'),
-                      subtitle: Text('Price: €$price / night'),
+                      title: Text('${'booking'.tr()}: $roomType'),
+                      subtitle: Text('${'price'.tr()}: €$price / night'),
                       leading: const Icon(Icons.hotel, color: Colors.orange),
                     ),
                   ),
@@ -150,7 +169,7 @@ class _BookingScreenState extends State<BookingScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your name';
+                        return 'please_enter_name'.tr();
                       }
                       return null;
                     },
@@ -166,7 +185,11 @@ class _BookingScreenState extends State<BookingScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
+                        return 'please_enter_email'.tr();
+                      }
+                      // Basic validation: contains '@' and ends with '.com'
+                      if (!value.contains('@') || !value.endsWith('.com')) {
+                        return 'Email must be valid and end with .com';
                       }
                       return null;
                     },
@@ -175,8 +198,8 @@ class _BookingScreenState extends State<BookingScreen> {
                   ListTile(
                     title: Text(
                       _checkIn == null
-                          ? 'Select Check-in Date'
-                          : 'Check-in: ${DateFormat('yyyy-MM-dd').format(_checkIn!)}',
+                          ? 'select_check_in'.tr()
+                          : '${'check_in'.tr()}: ${DateFormat('yyyy-MM-dd').format(_checkIn!)}',
                     ),
                     trailing: const Icon(Icons.calendar_today),
                     onTap: () => _selectDate(context, true),
@@ -184,8 +207,8 @@ class _BookingScreenState extends State<BookingScreen> {
                   ListTile(
                     title: Text(
                       _checkOut == null
-                          ? 'Select Check-out Date'
-                          : 'Check-out: ${DateFormat('yyyy-MM-dd').format(_checkOut!)}',
+                          ? 'select_check_out'.tr()
+                          : '${'check_out'.tr()}: ${DateFormat('yyyy-MM-dd').format(_checkOut!)}',
                     ),
                     trailing: const Icon(Icons.calendar_today),
                     onTap: () => _selectDate(context, false),
@@ -199,7 +222,7 @@ class _BookingScreenState extends State<BookingScreen> {
               ),
             ),
           ),
-          const Positioned(top: 10, left: 10, child: ResizeControls()),
+          const Positioned(bottom: 10, right: 10, child: ResizeControls()),
         ],
       ),
     );
