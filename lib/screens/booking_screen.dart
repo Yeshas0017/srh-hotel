@@ -188,7 +188,7 @@ class _BookingScreenState extends State<BookingScreen> {
                       }
                       // Basic validation: contains '@' and ends with '.com'
                       if (!value.contains('@') || !value.endsWith('.com')) {
-                        return 'Email must be valid and end with .com';
+                        return 'Email address is invalid';
                       }
                       return null;
                     },
